@@ -1,11 +1,34 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getMoviebyid } from './moviebyidApi';
+import { getMoviebyid, getMoviebyidToken } from './moviebyidApi';
 import { IMoviebyidState } from 'src/types/Moviebyid.types';
 
+export const getMoviebyidTokenApi = createAsyncThunk(
+	'@@moviebyid/getMoviebyidToken',
+	async (
+		arg: { filmId: number; token: string },
+		{ fulfillWithValue, rejectWithValue }
+	) => {
+		const { filmId, token } = arg;
+		try {
+			const response = await getMoviebyidToken(filmId, token);
+			const json = await response
+			return fulfillWithValue(json);
+		} catch (error: unknown) {
+			return rejectWithValue(error);
+		}
+	}
+);
+
 export const getMoviebyidApi = createAsyncThunk(
-	'@@movie/movie',
-	async ({ filmId }: { filmId: number }) => {
-		return getMoviebyid(filmId);
+	'@@moviebyid/getMoviebyid',
+	async (filmId: number, { fulfillWithValue, rejectWithValue }) => {
+		try {
+			const response = await getMoviebyid(filmId);
+			const json = await response;
+			return fulfillWithValue(json);
+		} catch (error: unknown) {
+			return rejectWithValue(error);
+		}
 	}
 );
 
@@ -55,19 +78,38 @@ const initialState: IMoviebyidState = {
 };
 
 export const moviebyidSlice = createSlice({
-	name: '@@movie',
+	name: '@@moviebyid',
 	initialState,
-	reducers: {},
+	reducers: {
+		resetMoviebyid: () => initialState,
+	},
 	extraReducers: (builder) => {
 		builder
-			.addCase(getMoviebyidApi.pending, (state, action) => {
-				state.status = 'loading';
-			})
 			.addCase(getMoviebyidApi.fulfilled, (state, action) => {
 				state.status = 'success';
 				state.movie = action.payload;
-			});
+			})
+			.addCase(getMoviebyidTokenApi.fulfilled, (state, action) => {
+				state.status = 'success';
+				state.movie = action.payload;
+			})
+			// .addMatcher(
+			// 	(action) => action.type.endsWith('/pending'),
+			// 	(state) => {
+			// 		state.status = 'loading';
+			// 		state.error = '';
+			// 	}
+			// )
+			// .addMatcher(
+			// 	(action) => action.type.endsWith('/rejected'),
+			// 	(state, action) => {
+			// 		state.status = 'failed';
+			// 		state.error = action.payload.statusText;
+			// 	}
+			// );
 	},
 });
+
+export const { resetMoviebyid } = moviebyidSlice.actions;
 
 export const moviebyidReducer = moviebyidSlice.reducer;

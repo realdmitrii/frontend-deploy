@@ -3,11 +3,15 @@ import './Auth.css';
 import Input from 'src/components/Input/Input';
 import { InputTypes } from 'src/types/Input.types';
 import Button from 'src/components/Button/Button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useAppDispatch } from 'src/services/typeHooks';
 import { ISignInData, ISignInFields } from 'src/types/Auth.types';
-import { setUser, signInUser } from 'src/services/redux/slices/user/user';
+import {
+	getUserInfo,
+	setUser,
+	signInUser,
+} from 'src/services/redux/slices/user/user';
 import {
 	EMAIL_VALIDATION_CONFIG,
 	PASSWORD_VALIDATION_CONFIG,
@@ -26,26 +30,31 @@ const SignInPage = () => {
 		getValues,
 	} = useForm<ISignInFields>({ mode: 'onChange' });
 
-	const onSubmit: SubmitHandler<ISignInFields> = (data) => {
-		console.log('data onSubmit:', data.email, data.password);
-
+	const onSubmit: SubmitHandler<ISignInFields> = () => {
 		const formValues = getValues();
-		console.log(formValues);
-		dispatch(signInUser(getValues() as ISignInData))
+
+		dispatch(signInUser(formValues as ISignInData))
 			.unwrap()
-			.then((res) => console.log('dispatch success', res))
-			.then(() => {
-				setUser(formValues.email);
+			.then((res) => {
+				dispatch(setUser({ email: formValues.email, token: res }));
+
 				navigate('/');
 				reset();
+				return res;
 			})
+			.then((res) => dispatch(getUserInfo(res)))
 			.catch((err) => {
-				if (err.status === 404) {
+				if (err.status === 404 || err.status === 400) {
 					setAuthError(true);
 				}
 				console.log('dispatch signInUser err:', err);
 			});
 	};
+
+	useEffect(() => {
+		reset();
+		setAuthError(false);
+	}, []);
 
 	return (
 		<main className="auth" id="sign-in-page">
@@ -65,8 +74,11 @@ const SignInPage = () => {
 					<Input
 						inputType={InputTypes.email}
 						labelText="Электронная почта"
-						validation={{ ...register('email', EMAIL_VALIDATION_CONFIG) }}
+						validation={{
+							...register('email', EMAIL_VALIDATION_CONFIG),
+						}}
 						error={errors?.email?.message}
+						// maxLength={VALIDATION_SETTINGS.email.maxLength}
 					/>
 					<Input
 						inputType={InputTypes.password}

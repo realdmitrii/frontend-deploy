@@ -4,9 +4,10 @@ import { useAppSelector } from '../../services/typeHooks';
 import { RatedElement } from '../RatedElement/RatedElement';
 import { useState, useEffect } from 'react';
 import { IMovieCard } from 'src/types/MovieCard.types';
-// import { useNavigate } from 'react-router-dom';
-// import { getMoviebyidApi } from 'src/services/redux/slices/moviebyid/moviebyid';
-// import { useAppDispatch } from '../../services/typeHooks';
+import { useNavigate } from 'react-router-dom';
+import { getMoviebyidApi, getMoviebyidTokenApi } from 'src/services/redux/slices/moviebyid/moviebyid';
+import { useAppDispatch } from '../../services/typeHooks';
+import { selectUser } from 'src/services/redux/slices/user/user';
 
 const Search = ({
 	isOpenSearch,
@@ -35,14 +36,19 @@ const Search = ({
 		}
 	}, [values]);
 
-	// const navigate = useNavigate();
-	// const dispatch = useAppDispatch();
+	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
+	const user = useAppSelector(selectUser);
 
-	// const handleImgClick = () => {
-	// 	dispatch(getMoviebyidApi({ filmId: film.id }));
-	// 	navigate('/movie-page');
-	// 	window.scrollTo(0, 0);
-	// };
+	const handleImgClick = (filmId: number, token: string) => {
+		if (user.token) {
+			dispatch(getMoviebyidTokenApi({ filmId: filmId, token: token }));
+		} else {
+			dispatch(getMoviebyidApi(filmId));
+		}
+		navigate('/movie-page');
+		window.scrollTo(0, 0);
+	};
 
 	return (
 		<section
@@ -52,8 +58,8 @@ const Search = ({
 				{!isFilteredFilms ? (
 					filteredFilms.slice(0, 5).map((film: IMovieCard) => (
 						<a
-							// href={film.movieCardUrl}
-							// onClick={handleImgClick}
+							key={film.id}
+							onClick={() => handleImgClick(film.id, user.token)}
 							className="searchGeneral__film"
 						>
 							<img
@@ -63,13 +69,13 @@ const Search = ({
 							<article className="searchGeneral__film-desc">
 								<p className="searchGeneral__film-name">{film.title}</p>
 								<div className="searchGeneral__film-info">
-									<p className="searchGeneral__film-rating">
+									<div className="searchGeneral__film-rating">
 										<RatedElement
 											imdb={film.rating.rate_imdb}
 											kinopoisk={film.rating.rate_kinopoisk}
 											isSearch={true}
 										/>
-									</p>
+									</div>
 									<p className="searchGeneral__film-genres">
 										{film.genres.join(', ')}
 									</p>

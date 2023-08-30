@@ -2,12 +2,9 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getMovies } from './moviesApi';
 import { IMovieCardState } from 'src/types/MovieCard.types';
 
-export const getMoviesApi = createAsyncThunk(
-	'@@film/film',
-	async () => {
-		return getMovies();
-	}
-);
+export const getMoviesApi = createAsyncThunk('@@movies/movies', async () => {
+	return getMovies();
+});
 
 const initialState: IMovieCardState = {
 	status: 'idle',
@@ -31,7 +28,7 @@ const initialState: IMovieCardState = {
 };
 
 export const moviesSlice = createSlice({
-	name: '@@film',
+	name: '@@movies',
 	initialState,
 	reducers: {},
 	extraReducers: (builder) => {

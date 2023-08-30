@@ -1,4 +1,4 @@
-import { IMovieCard } from "./MovieCard.types";
+import { IMovieCard } from './MovieCard.types';
 
 // export interface IFavorites {
 // 	id: number;
@@ -13,12 +13,13 @@ import { IMovieCard } from "./MovieCard.types";
 // }
 
 export interface IRating {
-    rate_imdb: number;
-    rate_kinopoisk: number;
+	rate_imdb: number;
+	rate_kinopoisk: number;
 }
 
 export interface IFavoritesState {
 	status: 'idle' | 'success' | 'loading' | 'failed';
 	error: string | undefined;
 	favorites: IMovieCard[];
+	watchlist: IMovieCard[];
 }

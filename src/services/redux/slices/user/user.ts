@@ -1,6 +1,22 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { fetchCheckEmail, fetchSignIn, fetchSignUp } from './userApi';
-import { IUser, ISignInData, ISignUpData } from 'src/types/Auth.types';
+import {
+	fetchCheckEmail,
+	fetchDeleteUser,
+	fetchEditFavGenres,
+	fetchEditUserInfo,
+	fetchGetUserInfo,
+	fetchPasswordRecovery,
+	fetchResetPassword,
+	fetchSignIn,
+	fetchSignUp,
+} from './userApi';
+import {
+	IUser,
+	ISignInData,
+	ISignUpData,
+	IResetPasswordData,
+	IEditProfileData,
+} from 'src/types/Auth.types';
 
 export interface IUserState {
 	status: 'idle' | 'success' | 'loading' | 'failed';
@@ -14,7 +30,7 @@ export const signInUser = createAsyncThunk(
 		try {
 			const response = await fetchSignIn(data);
 			const json = await response.json();
-			return fulfillWithValue(json);
+			return fulfillWithValue(json.access);
 		} catch (error: unknown) {
 			return rejectWithValue(error);
 		}
@@ -38,7 +54,97 @@ export const signUpUser = createAsyncThunk(
 	async (data: ISignUpData, { fulfillWithValue, rejectWithValue }) => {
 		try {
 			const response = await fetchSignUp(data);
-			return fulfillWithValue(response);
+			const responseData = { status: response.status, ok: response.ok };
+			return fulfillWithValue(responseData);
+		} catch (error: unknown) {
+			return rejectWithValue(error);
+		}
+	}
+);
+
+export const recoverPassword = createAsyncThunk(
+	'@@user/recoverPassword',
+	async (data: string, { fulfillWithValue, rejectWithValue }) => {
+		try {
+			const response = await fetchPasswordRecovery(data);
+			const responseData = { status: response.status, ok: response.ok };
+			return fulfillWithValue(responseData);
+		} catch (error: unknown) {
+			return rejectWithValue(error);
+		}
+	}
+);
+
+export const resetPassword = createAsyncThunk(
+	'@@user/resetPassword',
+	async (data: IResetPasswordData, { fulfillWithValue, rejectWithValue }) => {
+		try {
+			const response = await fetchResetPassword(data);
+			const responseData = { status: response.status, ok: response.ok };
+			return fulfillWithValue(responseData);
+		} catch (error: unknown) {
+			return rejectWithValue(error);
+		}
+	}
+);
+
+export const getUserInfo = createAsyncThunk(
+	'@@user/getUserInfo',
+	async (token: string, { fulfillWithValue, rejectWithValue }) => {
+		try {
+			const response = await fetchGetUserInfo(token);
+			const json = await response.json();
+			return fulfillWithValue(json);
+		} catch (error: unknown) {
+			return rejectWithValue(error);
+		}
+	}
+);
+
+export const editUserInfo = createAsyncThunk(
+	'@@user/editUserInfo',
+	async (
+		arg: {
+			data: IEditProfileData;
+			token: string;
+		},
+		{ fulfillWithValue, rejectWithValue }
+	) => {
+		const { data, token } = arg;
+		try {
+			const response = await fetchEditUserInfo(data, token);
+			const json = await response.json();
+			return fulfillWithValue(json);
+		} catch (error: unknown) {
+			return rejectWithValue(error);
+		}
+	}
+);
+
+export const editFavGenres = createAsyncThunk(
+	'@@user/editFavGenres',
+	async (
+		arg: { data: { fav_genres: number[] }; token: string },
+		{ fulfillWithValue, rejectWithValue }
+	) => {
+		const { data, token } = arg;
+		try {
+			const response = await fetchEditFavGenres(data, token);
+			const json = await response.json();
+			return fulfillWithValue(json);
+		} catch (error: unknown) {
+			return rejectWithValue(error);
+		}
+	}
+);
+
+export const deleteUser = createAsyncThunk(
+	'@@user/deleteUser',
+	async (token: string, { fulfillWithValue, rejectWithValue }) => {
+		try {
+			const response = await fetchDeleteUser(token);
+			const responseData = { status: response.status, ok: response.ok };
+			return fulfillWithValue(responseData);
 		} catch (error: unknown) {
 			return rejectWithValue(error);
 		}
@@ -47,8 +153,15 @@ export const signUpUser = createAsyncThunk(
 
 const initialState: IUserState = {
 	status: 'idle',
-	error: '',
-	user: { token: '', email: '', fav_genres: [] },
+	error: null,
+	user: {
+		email: '',
+		token: '',
+		fav_genres: [],
+		nickname: undefined,
+		dateOfBirth: undefined,
+		sex: undefined,
+	},
 };
 
 const userSlice = createSlice({
@@ -72,6 +185,30 @@ const userSlice = createSlice({
 			.addCase(signUpUser.fulfilled, (state) => {
 				state.status = 'success';
 			})
+			.addCase(recoverPassword.fulfilled, (state) => {
+				state.status = 'success';
+			})
+			.addCase(resetPassword.fulfilled, (state) => {
+				state.status = 'success';
+			})
+			.addCase(getUserInfo.fulfilled, (state, action) => {
+				state.status = 'success';
+				state.user.nickname = action.payload.username;
+				state.user.dateOfBirth = action.payload.date_of_birth;
+				state.user.sex = action.payload.sex;
+				state.user.fav_genres = action.payload.fav_genres;
+			})
+			.addCase(editUserInfo.fulfilled, (state, action) => {
+				state.status = 'success';
+				state.user.nickname = action.payload.username;
+				state.user.dateOfBirth = action.payload.date_of_birth;
+				state.user.sex = action.payload.sex;
+			})
+			.addCase(editFavGenres.fulfilled, (state, action) => {
+				state.status = 'success';
+				state.user.fav_genres = action.payload.fav_genres;
+			})
+			.addCase(deleteUser.fulfilled, () => initialState)
 			.addMatcher(
 				(action) => action.type.endsWith('/pending'),
 				(state) => {
@@ -94,3 +231,5 @@ export const { setUser, signOut } = userSlice.actions;
 export const userReducer = userSlice.reducer;
 
 export const selectUser = (state: { user: IUserState }) => state.user.user;
+export const selectUserStatus = (state: { user: IUserState }) =>
+	state.user.status;

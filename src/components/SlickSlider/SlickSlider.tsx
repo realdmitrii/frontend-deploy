@@ -1,92 +1,28 @@
 import './SlickSlider.css';
 import Slider from 'react-slick';
-import { useEffect, useState } from 'react';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { useAppDispatch, useAppSelector } from '../../services/typeHooks';
 import { FilmCard } from '../FilmCardWidth255/FilmCard';
 import { FC } from 'react';
-import { ISlider } from 'src/types/Rating.types';
-import { FilmCardLarge } from '../FilmCardLarge/FilmCardLarge';
-import { FilmCardSmall } from '../FilmCardWidth180/FilmCardSmall';
-import { getNewMovieCardsApi } from 'src/services/redux/slices/newmoviecards/newmoviecards';
-import { IMovieCard } from 'src/types/MovieCard.types';
+import { ICompilationsTwo } from 'src/types/Compilations.types';
 
-export const SlickSlider: FC<ISlider> = ({ type }) => {
-	const dispatch = useAppDispatch();
-	const films = useAppSelector((state) => state.movies.movies);
-	const [data, setData] = useState<IMovieCard[]>(films);
-
-	// const favorites = useAppSelector((state) => state.films.favoriteFilms);
-	// const willSee = useAppSelector((state) => state.films.mustSeeFilms);
-	// const ratedFilms = useAppSelector((state) => state.films.viewedFilms);
-
-	const newmovies = useAppSelector((state) => state.newmoviecards.movies);
-	const redactionOne = useAppSelector((state) => state.compilations.data[0])
-	const redactionTwo = useAppSelector((state) => state.compilations.data[1])
-	const redactionThree = useAppSelector((state) => state.compilations.data[2])
-
-	const settings =
-		type === 'news' || type === 'similar'
-			? {
-					dots: false,
-					infinite: true,
-					speed: 500,
-					slidesToShow: 5,
-					slidesToScroll: 3,
-					arrows: true,
-			  }
-			: {
-					dots: false,
-					infinite: true,
-					speed: 500,
-					slidesToShow: 4,
-					slidesToScroll: 4,
-					arrows: true,
-			  };
-
-	useEffect(() => {
-		if (type === 'specialforyou') {
-			setData(films);
-		} else if (type === 'news') {
-			setData(newmovies);
-		} else if (type === 'similar') {
-			setData(films);
-		} else if (type === 'redactionOne') {
-			setData(redactionOne.movies);
-		} 
-		else if (type === 'redactionTwo') {
-			setData(redactionTwo.movies);
-		} if (type === 'redactionThree') {
-			setData(redactionThree.movies);
-		}
-	}, []);
-
-	const title =
-		type === 'news'
-			? 'Новинки'
-			: type === 'specialforyou'
-			? 'Специально для вас'
-			: type === 'redactionOne'
-			? `${redactionOne.title}`
-			: type === 'similar'
-			? 'Похожие'
-			: type === 'redactionTwo'
-			? `${redactionTwo.title}`
-			: `${redactionThree.title}`;
-
-	const asdw =
-		type === 'specialforyou'
-			? data.map((item) => <FilmCardLarge film={item} />)
-			: data.map((item) => <FilmCardSmall film={item} />);
+export const SlickSlider: FC<ICompilationsTwo> = ({ title, movies }) => {
+	const settings = {
+		dots: false,
+		infinite: true,
+		speed: 500,
+		slidesToShow: 4,
+		slidesToScroll: 4,
+		arrows: true,
+	};
 
 	return (
 		<div className="slick-slider_container">
 			<h1 className="slick-slider_title">{title}</h1>
 			<Slider {...settings} className="slick-slider">
-				{type === 'redactionOne' || type === 'redactionTwo' || type === 'redactionThree'
-					? data.map((item) => <FilmCard film={item} />)
-					: asdw}
+				{movies.map((item) => (
+					<FilmCard key={item.id} film={item} />
+				))}
 			</Slider>
 		</div>
 	);

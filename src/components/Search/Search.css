@@ -35,10 +35,10 @@
 	text-decoration: none;
 }
 
-/* .searchGeneral__film:hover {
+.searchGeneral__film:hover {
 	opacity: 0.6;
 	cursor: pointer;
-} */
+}
 
 .searchGeneral__film:last-child {
 	margin-bottom: 0;

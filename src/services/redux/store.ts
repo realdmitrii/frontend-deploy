@@ -16,32 +16,34 @@ import { userReducer } from './slices/user/user';
 import { filmsReducer } from './slices/films/films';
 import { selectionsReducer } from './slices/selections/selections';
 import { ratingReducer } from './slices/rating/rating';
-import { windowResizeReducer } from './slices/window_resize/window_resize';
 import { moviebyidReducer } from './slices/moviebyid/moviebyid';
 import { newmoviecardsReducer } from './slices/newmoviecards/newmoviecards';
-import { moviedaycardsReducer } from './slices/moviesoftheday/moviesoftheday'
+import { moviedaycardsReducer } from './slices/moviesoftheday/moviesoftheday';
 import { genresiconscardsReducer } from './slices/genresIconsApi/genresIcons';
 import { genresReducer } from './slices/genres/genres';
 import { moviesReducer } from './slices/movies/movies';
 import { favoriteReducer } from './slices/favorites/favorites';
 import { compilationsReducer } from './slices/compilations/compilations';
-import { watchReducer } from './slices/watch/watch';
+import { moviesbygenreReducer} from './slices/movieByGenre/moviesByGenre';
+import { actorsReducer} from './slices/actors/actors';
+import { directorsReducer} from './slices/director/directors';
 
 const rootReducer = combineReducers({
 	user: userReducer,
 	films: filmsReducer,
-	movie: moviebyidReducer,
+	moviebyid: moviebyidReducer,
 	movies: moviesReducer,
 	favoritemovies: favoriteReducer,
-	watchmovies: watchReducer,
 	compilations: compilationsReducer,
 	newmoviecards: newmoviecardsReducer,
 	selection: selectionsReducer,
 	rating: ratingReducer,
-	windowResize: windowResizeReducer,
 	daymoviescards: moviedaycardsReducer,
 	genresiconscards: genresiconscardsReducer,
 	genres: genresReducer,
+	moviesbygenre: moviesbygenreReducer,
+	actors: actorsReducer,
+	directors: directorsReducer
 });
 
 const persistConfig = {

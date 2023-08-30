@@ -1,17 +1,38 @@
+import { useNavigate } from 'react-router';
 import './SelectionCard.css';
-import { ISelect } from 'src/types/Film.types';
+import { ICompilationsTwo } from 'src/types/Compilations.types';
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from 'src/services/typeHooks';
+import { getFilmsApi } from 'src/services/redux/slices/films/films';
+import { getCompilationsApi } from 'src/services/redux/slices/compilations/compilations';
 
-export const SelectionCard = ({ selected }: { selected: ISelect[] }) => {
+export const SelectionCard = ({
+	compilations,
+}: {
+	compilations: ICompilationsTwo[];
+}) => {
+	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
+
+	const handleAllButtonClick = (item: any) => {
+		localStorage.setItem('filmsBy', JSON.stringify(item));
+		navigate('/selections');
+	};
+
 	return (
 		<section className="selections">
-			{selected.map((item) => (
-				<div key={item.id} className="selections_cards">
+			{compilations.map((item) => (
+				<div
+					key={item.id}
+					className="selections_cards"
+					onClick={() => handleAllButtonClick(item)}
+				>
 					<div className="selections_card">
-						{item.movie.slice(0, 3).map((film) => (
+						{item.movies.slice(0, 3).map((film) => (
 							<img
 								className="selections_img"
 								key={film.id}
-								src={film.imageUrl}
+								src={film.v_picture}
 								alt={film.title}
 							/>
 						))}

@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from 'react';
-// import { useLocation } from 'react-router-dom';
 
 import { IInput } from '../../types/Input.types';
 
@@ -14,11 +13,10 @@ const Input: FC<IInput> = ({
 	showPasswordButton = false,
 	validation,
 	error = '',
-	ref,
+	onChange,
+	max,
+	defaultValue,
 }) => {
-	// const location = useLocation();
-	// const currentPath = location.pathname;
-
 	const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
 	useEffect(() => {
@@ -53,14 +51,23 @@ const Input: FC<IInput> = ({
 			</div>
 			<input
 				{...validation}
-				// ref={ref}
-				className={`input__field input__field_color_${color} ${
+				onChange={
+					onChange
+						? onChange
+						: (e) => {
+								validation.onChange(e);
+						  }
+				}
+				className={`input__field input__field_type_${inputType} input__field_color_${color} ${
 					error ? 'input__field_invalid' : ''
 				}`}
 				type={inputTextType}
 				name={inputType}
 				id={inputType}
 				readOnly={readOnly}
+				max={max}
+				defaultValue={defaultValue}
+				maxLength={inputTextType === 'date' ? 8 : undefined}
 				value={readOnly && value ? value : undefined}
 			/>
 			{showPasswordButton ? (
