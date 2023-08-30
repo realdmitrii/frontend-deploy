@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/frontend-deploy/static/css/main.3a8db684.css",
-    "main.js": "/frontend-deploy/static/js/main.9712f5ee.js",
+    "main.js": "/frontend-deploy/static/js/main.7f48255b.js",
     "static/media/Unbounded-Bold.ttf": "/frontend-deploy/static/media/Unbounded-Bold.0c54d6e100bb5ec11f3a.ttf",
     "static/media/Unbounded-SemiBold.ttf": "/frontend-deploy/static/media/Unbounded-SemiBold.cb16a9e03403a3a0a1a6.ttf",
     "static/media/Unbounded-Medium.ttf": "/frontend-deploy/static/media/Unbounded-Medium.cc4af91f728dfdfebfb5.ttf",
@@ -76,10 +76,10 @@
     "static/media/left.svg": "/frontend-deploy/static/media/left.f818ea7cfcc1253d79cbd3d39394e59a.svg",
     "static/media/arrow.svg": "/frontend-deploy/static/media/arrow.bcdfadb803d27723d6ca.svg",
     "main.3a8db684.css.map": "/frontend-deploy/static/css/main.3a8db684.css.map",
-    "main.9712f5ee.js.map": "/frontend-deploy/static/js/main.9712f5ee.js.map"
+    "main.7f48255b.js.map": "/frontend-deploy/static/js/main.7f48255b.js.map"
   },
   "entrypoints": [
     "static/css/main.3a8db684.css",
-    "static/js/main.9712f5ee.js"
+    "static/js/main.7f48255b.js"
   ]
 }
